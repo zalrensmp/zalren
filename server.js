@@ -5,7 +5,6 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
-const { Resend } = require('resend');
 const multer = require('multer');
 require('dotenv').config();
 
@@ -41,16 +40,6 @@ function getTransporter() {
 
 // Helper to send email or fallback to logging
 async function sendAuthEmail(toEmail, subject, htmlContent, consoleLogFallbackText) {
-    if (process.env.RESEND_API_KEY) {
-        try {
-            const resend = new Resend(process.env.RESEND_API_KEY);
-            const fromEmail = process.env.EMAIL_FROM || 'Zalren <onboarding@resend.dev>';
-            const { data, error } = await resend.emails.send({
-                from: fromEmail, to: toEmail, subject: subject, html: htmlContent
-            });
-            if (!error) return true;
-        } catch (error) { console.error('Exception sending email via Resend:', error); }
-    }
 
     const transporter = getTransporter();
     if (transporter) {
