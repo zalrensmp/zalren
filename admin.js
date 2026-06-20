@@ -1,4 +1,4 @@
-* admin.js — Zalren admin panel logic.
+/* admin.js — Zalren admin panel logic.
  *
  * Sections:
  *   1. State + helpers (auth token, api(), toast, modal, escape)
