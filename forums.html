@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zalren – Forums</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo-area">
+                <img src="logo.png" class="nav-logo-img" alt="Zalren Logo">
+                <div class="nav-title">Zalren</div>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="forums.html" class="nav-link active"><i class="fa-solid fa-comments"></i> Forums</a></li>
+                <li><a href="leaderboard.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Leaderboard</a></li>
+                <li><a href="staff.html" class="nav-link"><i class="fa-solid fa-users"></i> Staff</a></li>
+                <li><a href="rules.html" class="nav-link"><i class="fa-solid fa-scale-balanced"></i> Rules</a></li>
+                <li><a href="vote.html" class="nav-link"><i class="fa-solid fa-check-to-slot"></i> Vote</a></li>
+                <li><a href="login.html" class="nav-link" id="login-btn"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                <li><a href="register.html" class="nav-link" id="register-btn"><i class="fa-solid fa-user-plus"></i> Register</a></li>
+                <li><a href="https://zalrensmp-webshop.tebex.io/" target="_blank" class="nav-link nav-btn-store"><i class="fa-solid fa-cart-shopping"></i> Store</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="page-header-content">
+            <h1>Community <span style="color: var(--p-color);">Forums</span></h1>
+            <p>Join the discussion, read announcements, and interact with the Zalren community.</p>
+        </div>
+    </header>
+
+    <main class="main-container" style="display: block;">
+        <div id="forum-container" style="max-width: 900px; margin: 0 auto;">
+            <!-- Forum posts rendered by /api/forum -->
+            <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px; color: var(--p-color);"></i>
+                <p>Loading posts...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-about">
+                <h3>Play Now</h3>
+                <p>Start your pixel block adventure today! Join the community server now to compete in our custom arenas and wilderness worlds.</p>
+                <button class="btn btn-primary" id="play-ip-btn" style="display: inline-flex; align-items: center; gap: 10px;">
+                    <span class="server-ip-display">play.zalrensmp.fun</span> <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="footer-store">
+                <h3>Store Benefits</h3>
+                <p>Visit our server store to purchase ranks, claim cosmetic keys, boost capabilities, and support development.</p>
+                <a href="https://zalrensmp-webshop.tebex.io/" target="_blank" class="btn btn-primary" style="display: inline-block; margin-top: 10px;">Shop Ranks</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>Zalren © 2026. All rights reserved.</div>
+            <div>Not affiliated with Mojang or Microsoft. Created By Hon3y_pie.</div>
+        </div>
+    </footer>
+    <script>
+        // Render the public forum from /api/forum (pinned first, then newest)
+        function forumEsc(str) {
+            return String(str == null ? '' : str)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        (async function loadForum() {
+            const container = document.getElementById('forum-container');
+            try {
+                const res = await fetch('/api/forum');
+                const posts = await res.json();
+                if (!Array.isArray(posts) || posts.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                            <i class="fa-solid fa-comment-slash" style="font-size: 4rem; margin-bottom: 20px; opacity: 0.4;"></i>
+                            <h2>No Posts Yet</h2>
+                            <p>Forum posts will appear here once they are published.</p>
+                        </div>`;
+                    return;
+                }
+                container.innerHTML = posts.map(p => `
+                    <article class="card" ${p.pinned ? 'style="border-color: rgba(255,234,0,0.3);"' : ''}>
+                        <div class="news-header">
+                            <div class="news-meta">
+                                <img class="news-author-avatar" src="https://crafatar.com/avatars/${encodeURIComponent(p.author_avatar || p.author)}?size=64&overlay" alt="" style="object-fit:cover;" onerror="this.style.visibility='hidden'">
+                                <div>
+                                    <a href="#" class="news-title" onclick="return false;">${forumEsc(p.title)}</a>
+                                    <div class="news-time">
+                                        by ${forumEsc(p.author)}
+                                        &nbsp;•&nbsp; ${new Date(p.created_at).toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'})}
+                                        ${p.pinned ? '&nbsp;•&nbsp; <span style="color:#ffea00;"><i class="fa-solid fa-thumbtack"></i> Pinned</span>' : ''}
+                                        &nbsp;•&nbsp; <span style="color:var(--p-color);">${forumEsc(p.category)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="news-body" style="white-space: pre-wrap;">${forumEsc(p.body)}</div>
+                        ${p.image_url ? `<div class="news-image-wrapper" style="margin-top: 15px; text-align: center;"><img src="${p.image_url}" alt="Post Image" style="max-width: 100%; height: auto; border-radius: 8px; max-height: 450px; object-fit: contain; border: 1px solid rgba(255,255,255,0.1);"></div>` : ''}
+                    </article>`).join('');
+            } catch (err) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; margin-bottom: 15px; color: #ff9100;"></i>
+                        <h2>Couldn't Load Forum</h2>
+                        <p>Please try refreshing the page.</p>
+                    </div>`;
+            }
+        })();
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zalren – Vote</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo-area">
+                <img src="logo.png" class="nav-logo-img" alt="Zalren Logo">
+                <div class="nav-title">Zalren</div>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="forums.html" class="nav-link"><i class="fa-solid fa-comments"></i> Forums</a></li>
+                <li><a href="leaderboard.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Leaderboard</a></li>
+                <li><a href="staff.html" class="nav-link"><i class="fa-solid fa-users"></i> Staff</a></li>
+                <li><a href="rules.html" class="nav-link"><i class="fa-solid fa-scale-balanced"></i> Rules</a></li>
+                <li><a href="vote.html" class="nav-link active"><i class="fa-solid fa-check-to-slot"></i> Vote</a></li>
+                <li><a href="login.html" class="nav-link" id="login-btn"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                <li><a href="register.html" class="nav-link" id="register-btn"><i class="fa-solid fa-user-plus"></i> Register</a></li>
+                <li><a href="https://zalrensmp-webshop.tebex.io/" target="_blank" class="nav-link nav-btn-store"><i class="fa-solid fa-cart-shopping"></i> Store</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="page-header-content">
+            <h1>Vote for <span style="color: var(--p-color);">Zalren</span></h1>
+            <p>Support the server by voting daily! Earn in-game rewards like keys, money, and items.</p>
+        </div>
+    </header>
+
+    <main class="main-container" style="display: block;">
+        <div id="vote-container" style="max-width: 850px; margin: 0 auto; display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+            <!-- Vote links rendered by /api/votes -->
+            <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px; color: var(--p-color);"></i>
+                <p>Loading vote links...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-about">
+                <h3>Play Now</h3>
+                <p>Start your pixel block adventure today! Join the community server now to compete in our custom arenas and wilderness worlds.</p>
+                <button class="btn btn-primary" id="play-ip-btn" style="display: inline-flex; align-items: center; gap: 10px;">
+                    <span class="server-ip-display">play.zalrensmp.fun</span> <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="footer-store">
+                <h3>Store Benefits</h3>
+                <p>Visit our server store to purchase ranks, claim cosmetic keys, boost capabilities, and support development.</p>
+                <a href="https://zalrensmp-webshop.tebex.io/" target="_blank" class="btn btn-primary" style="display: inline-block; margin-top: 10px;">Shop Ranks</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>Zalren © 2026. All rights reserved.</div>
+            <div>Not affiliated with Mojang or Microsoft. Created By Hon3y_pie.</div>
+        </div>
+    </footer>
+    <script>
+        // Render the public vote links from /api/votes
+        function voteEsc(str) {
+            return String(str == null ? '' : str)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        (async function loadVotes() {
+            const container = document.getElementById('vote-container');
+            try {
+                const res = await fetch('/api/votes');
+                const votes = await res.json();
+                if (!Array.isArray(votes) || votes.length === 0) {
+                    container.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                            <i class="fa-solid fa-link-slash" style="font-size: 4rem; margin-bottom: 20px; opacity: 0.4;"></i>
+                            <h2>No Vote Links Yet</h2>
+                            <p>Check back later for ways to vote and earn rewards!</p>
+                        </div>`;
+                    return;
+                }
+                container.innerHTML = votes.map(v => `
+                    <div class="card" style="text-align: center; transition: transform 0.2s ease;">
+                        <div style="font-size: 2.5rem; color: var(--p-color); margin-bottom: 15px;">
+                            <i class="fa-solid fa-check-to-slot"></i>
+                        </div>
+                        <h3 style="margin-bottom: 10px; color: #fff;">${voteEsc(v.site_name)}</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+                            Vote daily to receive keys and more.
+                        </p>
+                        <a href="${voteEsc(v.url)}" target="_blank" class="btn btn-primary" style="width: 100%;">
+                            Vote Now
+                        </a>
+                    </div>`).join('');
+            } catch (err) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; margin-bottom: 15px; color: #ff9100;"></i>
+                        <h2>Couldn't Load Vote Links</h2>
+                        <p>Please try refreshing the page.</p>
+                    </div>`;
+            }
+        })();
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zalren – Staff</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/skinview3d@3.0.0-alpha.1/bundles/skinview3d.bundle.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo-area">
+                <img src="logo.png" class="nav-logo-img" alt="Zalren Logo">
+                <div class="nav-title">Zalren</div>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="forums.html" class="nav-link"><i class="fa-solid fa-comments"></i> Forums</a></li>
+                <li><a href="leaderboard.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Leaderboard</a></li>
+                <li><a href="staff.html" class="nav-link active"><i class="fa-solid fa-users"></i> Staff</a></li>
+                <li><a href="rules.html" class="nav-link"><i class="fa-solid fa-scale-balanced"></i> Rules</a></li>
+                <li><a href="vote.html" class="nav-link"><i class="fa-solid fa-check-to-slot"></i> Vote</a></li>
+                <li><a href="login.html" class="nav-link" id="login-btn"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                <li><a href="register.html" class="nav-link" id="register-btn"><i class="fa-solid fa-user-plus"></i> Register</a></li>
+                <li><a href="https://zalrensmp-webshop.tebex.io/" target="_blank" class="nav-link nav-btn-store"><i class="fa-solid fa-cart-shopping"></i> Store</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="page-header-content">
+            <h1>Meet Our <span style="color: var(--p-color);">Staff</span></h1>
+            <p>The dedicated team keeping Zalren safe and fun.</p>
+        </div>
+    </header>
+
+    <main class="main-container" style="display: block;">
+        <div class="staff-grid" id="staff-grid">
+            <!-- Staff cards rendered by /api/staff -->
+            <div style="grid-column: 1 / -1; text-align:center; padding: 60px 20px; color: var(--text-muted);">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px; color: var(--p-color);"></i>
+                <p>Loading staff...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-about">
+                <h3>Play Now</h3>
+                <p>Start your pixel block adventure today! Join the community server now to compete in our custom arenas and wilderness worlds.</p>
+                <button class="btn btn-primary" id="play-ip-btn" style="display: inline-flex; align-items: center; gap: 10px;">
+                    <span class="server-ip-display">play.zalrensmp.fun</span> <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="footer-store">
+                <h3>Store Benefits</h3>
+                <p>Visit our server store to purchase ranks, claim cosmetic keys, boost capabilities, and support development.</p>
+                <a href="https://zalrensmp-webshop.tebex.io/" target="_blank" class="btn btn-primary" style="display: inline-block; margin-top: 10px;">Shop Ranks</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>Zalren © 2026. All rights reserved.</div>
+            <div>Not affiliated with Mojang or Microsoft. Created By Hon3y_pie.</div>
+        </div>
+    </footer>
+    <script>
+        function staffEsc(str) {
+            return String(str == null ? '' : str)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        (async function loadStaff() {
+            const grid = document.getElementById('staff-grid');
+            try {
+                const res = await fetch('/api/staff');
+                const staff = await res.json();
+                if (!Array.isArray(staff) || staff.length === 0) {
+                    grid.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align:center; padding: 60px 20px; color: var(--text-muted);">
+                            <i class="fa-solid fa-users-slash" style="font-size: 4rem; margin-bottom: 20px; opacity: 0.4;"></i>
+                            <h2>No Staff Listed Yet</h2>
+                            <p>Staff members will appear here once they are added.</p>
+                        </div>`;
+                    return;
+                }
+                grid.innerHTML = staff.map(s => `
+                    <div class="staff-card">
+                        <div id="skin-viewer-${s.id}" style="width: 150px; height: 250px; margin: 0 auto 15px;"></div>
+                        <h3>${staffEsc(s.name)}</h3>
+                        <div class="staff-role-title">${staffEsc(s.role_title)}</div>
+                        <p class="staff-desc">${staffEsc(s.description || '')}</p>
+                    </div>`).join('');
+                
+                // Initialize skinview3d
+                staff.forEach(s => {
+                    if (typeof skinview3d === 'undefined') return;
+                    const skinUrl = s.skin_url || `https://crafatar.com/skins/${encodeURIComponent(s.minecraft_username || s.name)}`;
+                    try {
+                        const viewer = new skinview3d.SkinViewer({
+                            canvas: document.createElement("canvas"),
+                            width: 150,
+                            height: 250,
+                            skin: skinUrl
+                        });
+                        document.getElementById('skin-viewer-' + s.id).appendChild(viewer.canvas);
+                        viewer.camera.position.set(0, 10, 40);
+                        const control = skinview3d.createOrbitControls(viewer);
+                        control.enableRotate = true;
+                        control.enableZoom = false;
+                        control.enablePan = false;
+                        
+                        viewer.animation = new skinview3d.WalkingAnimation();
+                        viewer.animation.speed = 0.5;
+                    } catch(e) { console.error("Skin render failed for", s.name, e); }
+                });
+            } catch (err) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align:center; padding: 60px 20px; color: var(--text-muted);">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; margin-bottom: 15px; color: #ff9100;"></i>
+                        <h2>Couldn't Load Staff</h2>
+                        <p>Please try refreshing the page.</p>
+                    </div>`;
+            }
+        })();
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>

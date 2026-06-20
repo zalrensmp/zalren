@@ -1,0 +1,355 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel &bull; Zalren</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <!-- ===== Access gate: shown until we confirm the viewer is an admin ===== -->
+    <div id="gate" class="admin-gate" style="display:none;">
+        <div class="admin-gate-box">
+            <i class="fa-solid fa-lock lock-icon"></i>
+            <h1 id="gate-title">Checking access...</h1>
+            <p id="gate-msg">Please wait while we verify your permissions.</p>
+            <a href="login.html" class="btn btn-primary" id="gate-login-btn" style="display:none;">
+                <i class="fa-solid fa-right-to-bracket"></i> Sign In
+            </a>
+            <a href="index.html" class="btn btn-secondary" id="gate-home-btn" style="margin-left:10px; display:none;">
+                <i class="fa-solid fa-house"></i> Go Home
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== Main panel: shown once admin access is confirmed ===== -->
+    <div id="panel" class="admin-layout" style="display:none;">
+
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-brand">
+                <img src="logo.png" alt="Zalren">
+                <div class="brand-text">Zalren Admin</div>
+            </div>
+
+            <button class="admin-nav-item active" data-tab="dashboard">
+                <i class="fa-solid fa-gauge-high"></i> Dashboard
+            </button>
+            <button class="admin-nav-item" data-tab="staff">
+                <i class="fa-solid fa-users"></i> Staff
+            </button>
+            <button class="admin-nav-item" data-tab="forum">
+                <i class="fa-solid fa-comments"></i> Forum Posts
+            </button>
+            <button class="admin-nav-item" data-tab="leaderboard">
+                <i class="fa-solid fa-trophy"></i> Leaderboard
+            </button>
+            <button class="admin-nav-item" data-tab="rules">
+                <i class="fa-solid fa-scale-balanced"></i> Rules
+            </button>
+            <button class="admin-nav-item" data-tab="votes">
+                <i class="fa-solid fa-check-to-slot"></i> Votes
+            </button>
+            <button class="admin-nav-item" data-tab="homeposts">
+                <i class="fa-solid fa-newspaper"></i> Home Posts
+            </button>
+            <button class="admin-nav-item" data-tab="slides">
+                <i class="fa-solid fa-images"></i> Home Slides
+            </button>
+            <button class="admin-nav-item" data-tab="users">
+                <i class="fa-solid fa-user-gear"></i> Users
+            </button>
+
+            <div class="admin-sidebar-footer">
+                <div id="admin-who">Signed in as —</div>
+                <a href="index.html" style="color:var(--text-muted); display:block; margin-top:8px;">
+                    <i class="fa-solid fa-arrow-left"></i> Back to site
+                </a>
+                <button id="logout-btn" class="txt-btn danger" style="margin-top:6px; padding-left:0;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Log out
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main content area: each section is one tab -->
+        <main class="admin-main">
+
+            <!-- ---------- DASHBOARD ---------- -->
+            <section id="tab-dashboard" class="tab-pane">
+                <div class="admin-page-title">
+                    <h1>Dashboard <span>Overview</span></h1>
+                </div>
+                
+                <div class="panel-card" style="margin-bottom: 25px;">
+                    <h3><i class="fa-solid fa-server"></i> Server Configuration</h3>
+                    <form id="settings-form" style="margin-top: 15px; max-width: 400px;">
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="admin-field">
+                                <label>Server IP Address</label>
+                                <input class="admin-input" id="setting-ip" required placeholder="play.zalrensmp.fun">
+                            </div>
+                            <div class="admin-field">
+                                <label>Server Version</label>
+                                <input class="admin-input" id="setting-version" placeholder="1.20.4">
+                            </div>
+                        </div>
+                        <div class="admin-field" style="margin-top: 15px;">
+                            <label>Hero Banner Image</label>
+                            <input type="file" id="setting-banner" accept="image/*" class="admin-input" style="padding: 10px;">
+                        </div>
+                        <button type="submit" class="btn-add" style="margin-top: 15px;"><i class="fa-solid fa-save"></i> Save Settings</button>
+                    </form>
+                </div>
+
+                <div class="stat-grid" id="stat-grid">
+                    <!-- stat cards injected by admin.js -->
+                </div>
+                <div class="panel-card">
+                    <h3><i class="fa-solid fa-user-plus"></i> Recent Registrations</h3>
+                    <div id="recent-users">
+                        <div class="admin-loading"><i class="fa-solid fa-spinner fa-spin"></i></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- STAFF ---------- -->
+            <section id="tab-staff" class="tab-pane" style="display:none;">
+                <div class="admin-page-title">
+                    <h1>Staff <span>Management</span></h1>
+                    <button class="btn-add" data-action="add-staff">
+                        <i class="fa-solid fa-plus"></i> Add Staff
+                    </button>
+                </div>
+                <p style="color:var(--text-muted); margin-bottom:18px;">
+                    Use the up/down arrows to reorder how staff appear on the public <a href="staff.html" style="color:var(--p-color);">Staff page</a>.
+                </p>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Member</th>
+                                <th>Role Title</th>
+                                <th>Minecraft IGN</th>
+                                <th>Order</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staff-tbody">
+                            <tr><td colspan="6"><div class="admin-loading"><i class="fa-solid fa-spinner fa-spin"></i></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ---------- FORUM ---------- -->
+            <section id="tab-forum" class="tab-pane" style="display:none;">
+                <div class="admin-page-title">
+                    <h1>Forum <span>Posts</span></h1>
+                    <button class="btn-add" data-action="add-forum">
+                        <i class="fa-solid fa-plus"></i> New Post
+                    </button>
+                </div>
+                <p style="color:var(--text-muted); margin-bottom:18px;">
+                    Posts published here appear on the public <a href="forums.html" style="color:var(--p-color);">Forums page</a>. Pinned posts show first.
+                </p>
+                <div id="forum-list">
+                    <div class="admin-loading"><i class="fa-solid fa-spinner fa-spin"></i></div>
+                </div>
+            </section>
+
+            <!-- ---------- LEADERBOARD ---------- -->
+            <section id="tab-leaderboard" class="tab-pane" style="display:none;">
+                <div class="admin-page-title">
+                    <h1>Leaderboard <span>Editor</span></h1>
+                    <button class="btn-add" data-action="add-leaderboard">
+                        <i class="fa-solid fa-plus"></i> Add Entry
+                    </button>
+                </div>
+                <p style="color:var(--text-muted); margin-bottom:18px;">
+                    Reorder entries to update the public <a href="leaderboard.html" style="color:var(--p-color);">Leaderboard page</a>. Rank 1 is the top.
+                </p>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Player</th>
+                                <th>Category</th>
+                                <th>Score</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-tbody">
+                            <tr><td colspan="5"><div class="admin-loading"><i class="fa-solid fa-spinner fa-spin"></i></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ---------- RULES ---------- -->
+            <section id="tab-rules" class="tab-pane" style="display:none;">
+                <div class="admin-page-title">
+                    <h1>Server <span>Rules</span></h1>
+                    <button class="btn-add" data-action="add-rule">
+                        <i class="fa-solid fa-plus"></i> Add Rule
+                    </button>
+                </div>
+                <p style="color:var(--text-muted); margin-bottom:18px;">
+                    Manage rules that appear on the public Rules page.
+                </p>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Icon</th>
+                                <th>Category</th>
+                                <th>Rule</th>
+                                <th>Order</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rules-tbody">
+                            <tr><td colspan="6"><div class="admin-loading"><i class="fa-solid fa-spinner fa-spin"></i></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ---------- VOTES ---------- -->
+            <section id="tab-votes" class="tab-pane" style="display:none;">
+                <div class="admin-page-title">
+                    <h1>Vote <span>Links</span></h1>
+                    <button class="btn-add" data-action="add-vote">
+                        <i class="fa-solid fa-plus"></i> Add Vote Link
+                    </button>
+                </div>
+                <p style="color:var(--text-muted); margin-bottom:18px;">
+                    Manage voting sites that appear on the public Vote page.
+                </p>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Site Name</th>
+                                <th>URL</th>
+                                <th>Order</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="votes-tbody">
+                            <tr><td colspan="5"><div class="admin-loading"><i class="fa-solid fa-spinner fa-spin"></i></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ---------- HOME POSTS ---------- -->
+            <section id="tab-homeposts" class="tab-pane" style="display:none;">
+                <div class="admin-page-title">
+                    <h1>Home Screen <span>Posts</span></h1>
+                    <button class="btn-add" data-action="add-homepost">
+                        <i class="fa-solid fa-plus"></i> Add Post
+                    </button>
+                </div>
+                <p style="color:var(--text-muted); margin-bottom:18px;">
+                    Manage posts/news displayed directly on the Home Screen.
+                </p>
+                <div id="homeposts-list">
+                    <div class="admin-loading"><i class="fa-solid fa-spinner fa-spin"></i></div>
+                </div>
+            </section>
+
+            <!-- ---------- SLIDES ---------- -->
+            <section id="tab-slides" class="tab-pane" style="display:none;">
+                <div class="admin-page-title">
+                    <h1>Home Screen <span>Slides</span></h1>
+                    <button class="btn-add" data-action="add-slide">
+                        <i class="fa-solid fa-plus"></i> Add Slide
+                    </button>
+                </div>
+                <p style="color:var(--text-muted); margin-bottom:18px;">
+                    Add, edit, or remove slides in the homepage carousel.
+                </p>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Order</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="slides-tbody">
+                            <tr><td colspan="5"><div class="admin-loading"><i class="fa-solid fa-spinner fa-spin"></i></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ---------- USERS ---------- -->
+            <section id="tab-users" class="tab-pane" style="display:none;">
+                <div class="admin-page-title">
+                    <h1>User <span>Accounts</span></h1>
+                    <div class="search-wrap">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="user-search" class="search-box" placeholder="Search username, email, name...">
+                    </div>
+                </div>
+                <p style="color:var(--text-muted); margin-bottom:18px;">
+                    View and manage registered accounts. Promote trusted users to admin, manually verify accounts, or remove spam registrations.
+                </p>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody">
+                            <tr><td colspan="6"><div class="admin-loading"><i class="fa-solid fa-spinner fa-spin"></i></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ===== Generic modal (reused for all create/edit/confirm forms) ===== -->
+    <div class="admin-modal" id="modal">
+        <div class="admin-modal-box">
+            <div class="admin-modal-header">
+                <h2 id="modal-title">Title</h2>
+                <button class="admin-modal-close" id="modal-close">&times;</button>
+            </div>
+            <div id="modal-body"><!-- injected by admin.js --></div>
+        </div>
+    </div>
+
+    <!-- ===== Toast ===== -->
+    <div class="admin-toast" id="toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toast-msg">Done</span>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zalren – Leaderboard</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo-area">
+                <img src="logo.png" class="nav-logo-img" alt="Zalren Logo">
+                <div class="nav-title">Zalren</div>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="forums.html" class="nav-link"><i class="fa-solid fa-comments"></i> Forums</a></li>
+                <li><a href="leaderboard.html" class="nav-link active"><i class="fa-solid fa-chart-line"></i> Leaderboard</a></li>
+                <li><a href="staff.html" class="nav-link"><i class="fa-solid fa-users"></i> Staff</a></li>
+                <li><a href="rules.html" class="nav-link"><i class="fa-solid fa-scale-balanced"></i> Rules</a></li>
+                <li><a href="vote.html" class="nav-link"><i class="fa-solid fa-check-to-slot"></i> Vote</a></li>
+                <li><a href="login.html" class="nav-link" id="login-btn"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                <li><a href="register.html" class="nav-link" id="register-btn"><i class="fa-solid fa-user-plus"></i> Register</a></li>
+                <li><a href="https://zalrensmp-webshop.tebex.io/" target="_blank" class="nav-link nav-btn-store"><i class="fa-solid fa-cart-shopping"></i> Store</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="page-header-content">
+            <h1>Player <span style="color: var(--p-color);">Leaderboards</span></h1>
+            <p>See who the top players are across various categories on Zalren.</p>
+        </div>
+    </header>
+
+    <main class="main-container" style="display: block;">
+        <div id="leaderboard-container" style="max-width: 850px; margin: 0 auto;">
+            <!-- Leaderboard rendered by /api/leaderboard -->
+            <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px; color: var(--p-color);"></i>
+                <p>Loading leaderboard...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-about">
+                <h3>Play Now</h3>
+                <p>Start your pixel block adventure today! Join the community server now to compete in our custom arenas and wilderness worlds.</p>
+                <button class="btn btn-primary" id="play-ip-btn" style="display: inline-flex; align-items: center; gap: 10px;">
+                    <span class="server-ip-display">play.zalrensmp.fun</span> <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="footer-store">
+                <h3>Store Benefits</h3>
+                <p>Visit our server store to purchase ranks, claim cosmetic keys, boost capabilities, and support development.</p>
+                <a href="https://zalrensmp-webshop.tebex.io/" target="_blank" class="btn btn-primary" style="display: inline-block; margin-top: 10px;">Shop Ranks</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>Zalren © 2026. All rights reserved.</div>
+            <div>Not affiliated with Mojang or Microsoft. Created By Hon3y_pie.</div>
+        </div>
+    </footer>
+    <script>
+        // Render the public leaderboard from /api/leaderboard (admin-controlled order)
+        function lbEsc(str) {
+            return String(str == null ? '' : str)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        (async function loadLeaderboard() {
+            const container = document.getElementById('leaderboard-container');
+            try {
+                const res = await fetch('/api/leaderboard');
+                const entries = await res.json();
+                if (!Array.isArray(entries) || entries.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                            <i class="fa-solid fa-medal" style="font-size: 4rem; margin-bottom: 20px; opacity: 0.4;"></i>
+                            <h2>No Rankings Yet</h2>
+                            <p>Top players will appear here once the leaderboard is populated.</p>
+                        </div>`;
+                    return;
+                }
+                const medalColors = ['#ffd700', '#c0c0c0', '#cd7f32'];
+                container.innerHTML = `
+                    <div class="card" style="padding: 0; overflow: hidden;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: rgba(10,14,20,0.5);">
+                                    <th style="text-align:left; padding: 16px 20px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">Rank</th>
+                                    <th style="text-align:left; padding: 16px 20px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">Player</th>
+                                    <th style="text-align:left; padding: 16px 20px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">Category</th>
+                                    <th style="text-align:right; padding: 16px 20px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${entries.map((e, i) => {
+                                    const rank = i + 1;
+                                    const medal = rank <= 3 ? `<i class="fa-solid fa-medal" style="color:${medalColors[rank-1]}; margin-right:8px;"></i>` : '';
+                                    return `
+                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);${rank===1?' background: rgba(255,215,0,0.04);':''}">
+                                        <td style="padding: 16px 20px;">
+                                            <span style="display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:${rank<=3?'rgba(255,255,255,0.1)':'rgba(255,255,255,0.04)'}; font-weight:800; color:${rank<=3?medalColors[rank-1]:'var(--text-muted)'};">${rank}</span>
+                                        </td>
+                                        <td style="padding: 16px 20px;">
+                                            <div style="display:flex; align-items:center; gap:12px;">
+                                                <img src="https://crafatar.com/avatars/${encodeURIComponent(e.player)}?size=64&overlay" alt="" style="width:32px; height:32px; border-radius:6px; image-rendering:pixelated;" onerror="this.style.visibility='hidden'">
+                                                <span style="font-weight:700;">${lbEsc(e.player)}</span>
+                                            </div>
+                                        </td>
+                                        <td style="padding: 16px 20px; color: var(--text-muted);">${lbEsc(e.category)}</td>
+                                        <td style="padding: 16px 20px; text-align: right; font-weight:800; color: var(--p-color);">${medal}${Number(e.score).toLocaleString()}</td>
+                                    </tr>`;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>`;
+            } catch (err) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; margin-bottom: 15px; color: #ff9100;"></i>
+                        <h2>Couldn't Load Leaderboard</h2>
+                        <p>Please try refreshing the page.</p>
+                    </div>`;
+            }
+        })();
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>

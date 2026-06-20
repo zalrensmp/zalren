@@ -1,0 +1,22 @@
+# Environment variables (NEVER commit these)
+.env
+
+# Node dependencies
+node_modules/
+
+# Uploads folder
+uploads/
+
+# Temp / scratch scripts
+test-nodemailer.js
+test-resend.js
+fix-slides-text.js
+clear-slides.js
+manage-admin.js
+
+# OS files
+.DS_Store
+Thumbs.db
+
+nul
+.png

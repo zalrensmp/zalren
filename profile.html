@@ -1,0 +1,439 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile &bull; Zalren</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .profile-card {
+            background: rgba(17,24,35,0.7);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 15px;
+            object-fit: cover;
+            border: 2px solid var(--p-color);
+            background: rgba(0,0,0,0.3);
+        }
+        .profile-title h2 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        .profile-title p {
+            color: var(--text-muted);
+            margin: 0;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(10,14,20,0.8);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--p-color);
+            box-shadow: 0 0 0 3px rgba(0,229,255,0.1);
+        }
+        .btn-submit {
+            background: var(--p-color);
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,229,255,0.3);
+            background: #fff;
+        }
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title i {
+            color: var(--p-color);
+        }
+        .toast-msg {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: none;
+            font-weight: 500;
+        }
+        .toast-msg.success {
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            color: var(--p-color);
+            display: block;
+        }
+        .toast-msg.error {
+            background: rgba(255, 23, 68, 0.1);
+            border: 1px solid rgba(255, 23, 68, 0.3);
+            color: #ff1744;
+            display: block;
+        }
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; gap: 0; }
+            .profile-header { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo-area">
+                <img src="logo.png" class="nav-logo-img" alt="Zalren Logo">
+                <div class="nav-title">Zalren</div>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="forums.html" class="nav-link"><i class="fa-solid fa-comments"></i> Forums</a></li>
+                <li><a href="leaderboard.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Leaderboard</a></li>
+                <li><a href="staff.html" class="nav-link"><i class="fa-solid fa-users"></i> Staff</a></li>
+                <li><a href="rules.html" class="nav-link"><i class="fa-solid fa-scale-balanced"></i> Rules</a></li>
+                <li><a href="vote.html" class="nav-link"><i class="fa-solid fa-check-to-slot"></i> Vote</a></li>
+                <li><a href="login.html" class="nav-link" id="login-btn"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                <li><a href="register.html" class="nav-link" id="register-btn"><i class="fa-solid fa-user-plus"></i> Register</a></li>
+                <li><a href="https://zalrensmp-webshop.tebex.io/" target="_blank" class="nav-link nav-btn-store"><i class="fa-solid fa-cart-shopping"></i> Store</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="page-header-content">
+            <h1>Account <span style="color: var(--p-color);">Profile</span></h1>
+            <p>Manage your account details and preferences.</p>
+        </div>
+    </header>
+
+    <main class="profile-container">
+        <!-- Profile Details Card -->
+        <div class="profile-card">
+            <div id="profile-msg" class="toast-msg"></div>
+            
+            <form id="profile-form">
+                <div class="profile-header">
+                    <img src="https://crafatar.com/avatars/Steve?size=100&overlay" alt="Avatar" id="display-avatar" class="profile-avatar">
+                    <div class="profile-title">
+                        <h2 id="display-name">Loading...</h2>
+                        <p id="display-role">Member</p>
+                    </div>
+                </div>
+
+                <div class="section-title"><i class="fa-solid fa-user-pen"></i> Personal Information</div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" id="prof-fname" name="fname" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" id="prof-lname" name="lname" class="form-input" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Website Username</label>
+                        <input type="text" id="prof-username" name="username" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Minecraft IGN (Used for Avatar)</label>
+                        <input type="text" id="prof-ign" name="minecraft_username" class="form-input" placeholder="Your Minecraft Username">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Custom Avatar (Optional)</label>
+                    <input type="file" id="prof-avatar" name="avatar" class="form-input" accept="image/*">
+                    <small style="color: var(--text-muted); margin-top: 5px; display: block;">Leave empty to use your Minecraft skin face.</small>
+                </div>
+
+                <button type="submit" class="btn-submit" id="prof-submit-btn"><i class="fa-solid fa-save"></i> Save Profile</button>
+            </form>
+        </div>
+
+        <!-- Password Change Card -->
+        <div class="profile-card">
+            <div id="password-msg" class="toast-msg"></div>
+            <div class="section-title"><i class="fa-solid fa-lock"></i> Change Password</div>
+            
+            <form id="password-form">
+                <div class="form-group">
+                    <label>Current Password</label>
+                    <input type="password" id="pw-current" class="form-input" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" id="pw-new" class="form-input" required placeholder="Min 8 chars">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <input type="password" id="pw-confirm" class="form-input" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit" id="pw-submit-btn"><i class="fa-solid fa-key"></i> Update Password</button>
+            </form>
+        </div>
+
+        <!-- Logout Section -->
+        <div style="text-align: center; margin-top: 40px;">
+            <button id="prof-logout-btn" class="btn-submit" style="background: rgba(255, 23, 68, 0.1); border: 1px solid #ff1744; color: #ff1744;">
+                <i class="fa-solid fa-right-from-bracket"></i> Log Out
+            </button>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-about">
+                <h3>Play Now</h3>
+                <p>Start your pixel block adventure today! Join the community server now to compete in our custom arenas and wilderness worlds.</p>
+                <button class="btn btn-primary" id="play-ip-btn" style="display: inline-flex; align-items: center; gap: 10px;">
+                    <span class="server-ip-display">play.zalrensmp.fun</span> <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="footer-store">
+                <h3>Store Benefits</h3>
+                <p>Visit our server store to purchase ranks, claim cosmetic keys, boost capabilities, and support development.</p>
+                <a href="https://zalrensmp-webshop.tebex.io/" target="_blank" class="btn btn-primary" style="display: inline-block; margin-top: 10px;">Shop Ranks</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>Zalren © 2026. All rights reserved.</div>
+            <div>Not affiliated with Mojang or Microsoft. Created By Hon3y_pie.</div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toast-msg-text">Copied!</span>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Check authentication
+        const token = localStorage.getItem('token') || (JSON.parse(localStorage.getItem('user') || '{}').token);
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        let currentUserEmail = '';
+
+        // Load profile data
+        async function loadProfile() {
+            try {
+                const res = await fetch('/api/me', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!res.ok) throw new Error('Failed to load profile. Please log in again.');
+                const user = await res.json();
+                
+                currentUserEmail = user.email; // used for password change API if needed
+                
+                document.getElementById('prof-fname').value = user.fname || '';
+                document.getElementById('prof-lname').value = user.lname || '';
+                document.getElementById('prof-username').value = user.username || '';
+                document.getElementById('prof-ign').value = user.minecraft_username || '';
+                
+                document.getElementById('display-name').textContent = user.username;
+                document.getElementById('display-role').textContent = (user.role || 'user').toUpperCase();
+
+                // Avatar logic
+                const avatarEl = document.getElementById('display-avatar');
+                if (user.avatar_url) {
+                    avatarEl.src = user.avatar_url;
+                } else if (user.minecraft_username) {
+                    avatarEl.src = `https://crafatar.com/avatars/${encodeURIComponent(user.minecraft_username)}?size=100&overlay`;
+                } else if (user.username) {
+                    avatarEl.src = `https://crafatar.com/avatars/${encodeURIComponent(user.username)}?size=100&overlay`;
+                }
+            } catch (err) {
+                alert(err.message);
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
+        }
+
+        loadProfile();
+
+        // Handle Profile Form
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('prof-submit-btn');
+            const msg = document.getElementById('profile-msg');
+            
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+            msg.className = 'toast-msg';
+
+            const fd = new FormData(e.target);
+
+            try {
+                const res = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    body: fd
+                });
+                const data = await res.json();
+                
+                if (!res.ok) throw new Error(data.error || 'Failed to update profile');
+                
+                msg.className = 'toast-msg success';
+                msg.textContent = 'Profile updated successfully!';
+                
+                // Update local storage user data
+                let u = JSON.parse(localStorage.getItem('user') || '{}');
+                Object.assign(u, data.user);
+                localStorage.setItem('user', JSON.stringify(u));
+                
+                loadProfile(); // refresh image
+            } catch(err) {
+                msg.className = 'toast-msg error';
+                msg.textContent = err.message;
+            }
+            
+            btn.innerHTML = '<i class="fa-solid fa-save"></i> Save Profile';
+            btn.disabled = false;
+        });
+
+        // Handle Password Form
+        document.getElementById('password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('pw-submit-btn');
+            const msg = document.getElementById('password-msg');
+            
+            const currentPw = document.getElementById('pw-current').value;
+            const newPw = document.getElementById('pw-new').value;
+            const confPw = document.getElementById('pw-confirm').value;
+
+            if (newPw.length < 8) {
+                msg.className = 'toast-msg error';
+                msg.textContent = 'New password must be at least 8 characters long.';
+                return;
+            }
+            if (newPw !== confPw) {
+                msg.className = 'toast-msg error';
+                msg.textContent = 'New passwords do not match.';
+                return;
+            }
+
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating...';
+            btn.disabled = true;
+            msg.className = 'toast-msg';
+
+            try {
+                const res = await fetch('/api/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        usernameOrEmail: currentUserEmail,
+                        currentPassword: currentPw,
+                        newPassword: newPw
+                    })
+                });
+                const data = await res.json();
+                
+                if (!res.ok) throw new Error(data.error || 'Failed to change password');
+                
+                msg.className = 'toast-msg success';
+                msg.textContent = 'Password changed successfully!';
+                e.target.reset();
+            } catch(err) {
+                msg.className = 'toast-msg error';
+                msg.textContent = err.message;
+            }
+            
+            btn.innerHTML = '<i class="fa-solid fa-key"></i> Update Password';
+            btn.disabled = false;
+        });
+
+        // Handle Logout
+        document.getElementById('prof-logout-btn').addEventListener('click', async (e) => {
+            if (confirm('Are you sure you want to log out?')) {
+                try {
+                    await fetch('/api/logout', {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                } catch(e) {}
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

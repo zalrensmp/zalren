@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zalren &bull; Official Minecraft Server</title>
+    <meta name="description" content="Welcome to the official Zalren server website. Join the ultimate survival and PvP Minecraft experience.">
+    <link rel="icon" type="image/png" href="logo.png">
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Core CSS stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo-area">
+                <img src="logo.png" class="nav-logo-img" alt="Zalren Logo">
+                <div class="nav-title">Zalren</div>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="#" class="nav-link active"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="forums.html" class="nav-link"><i class="fa-solid fa-comments"></i> Forums</a></li>
+                <li><a href="leaderboard.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Leaderboard</a></li>
+                <li><a href="staff.html" class="nav-link"><i class="fa-solid fa-users"></i> Staff</a></li>
+                <li><a href="rules.html" class="nav-link"><i class="fa-solid fa-scale-balanced"></i> Rules</a></li>
+                <li><a href="vote.html" class="nav-link"><i class="fa-solid fa-check-to-slot"></i> Vote</a></li>
+                <li><a href="login.html" class="nav-link" id="login-btn"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                <li><a href="register.html" class="nav-link" id="register-btn"><i class="fa-solid fa-user-plus"></i> Register</a></li>
+                <li><a href="https://zalrensmp-webshop.tebex.io/" target="_blank" class="nav-link nav-btn-store"><i class="fa-solid fa-cart-shopping"></i> Store</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Banner with floating interactive headers -->
+    <header class="hero-wrapper">
+        <div class="header-action-grid">
+            <!-- Server Status & Copy IP -->
+            <div class="action-card" id="ip-card">
+                <div class="action-card-text">
+                    <span class="action-title" id="players-online-val">Loading...</span>
+                    <span class="action-sub server-ip-display">play.zalrensmp.fun</span>
+                </div>
+                <div class="action-icon">
+                    <i class="fa-regular fa-copy"></i>
+                </div>
+            </div>
+
+            <!-- Animated floating logo in Center -->
+            <div class="center-logo-box">
+                <img src="logo.png" class="center-logo" alt="Zalren Premium Logo">
+            </div>
+
+            <!-- Discord Invite -->
+            <a href="https://dsc.gg/zalrensmp" target="_blank" style="text-decoration: none; color: inherit;">
+                <div class="action-card">
+                    <div class="action-card-text">
+                        <span class="action-title" style="color: #5865F2;">Join Discord</span>
+                        <span class="action-sub">dsc.gg/zalrensmp</span>
+                    </div>
+                    <div class="action-icon" style="color: #5865F2;">
+                        <i class="fa-brands fa-discord"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content Layout Section -->
+    <main class="main-container">
+        
+        <!-- Left Side: Slider, Welcome & News Board -->
+        <section class="content-left">
+            
+            <!-- Dynamic Slide Showcase Carousel -->
+            <div class="carousel">
+                <div class="carousel-slide active" style="background-image: url('slide1.png');">
+                    <div class="carousel-caption">
+                        <h2 class="carousel-title">Welcome to Zalren</h2>
+                        <p class="carousel-desc">Your brand new premium Minecraft community is waiting! Gather resources, build kingdoms, and command the realms.</p>
+                    </div>
+                </div>
+                <div class="carousel-slide" style="background-image: url('slide2.png');">
+                    <div class="carousel-caption">
+                        <h2 class="carousel-title">Epic Arenas & Custom PvP</h2>
+                        <p class="carousel-desc">Engage in fair, custom PvP combat matches. Prove your combat strength and secure rare server rank loot keys.</p>
+                    </div>
+                </div>
+                <div class="carousel-slide" style="background-image: url('slide3.png');">
+                    <div class="carousel-caption">
+                        <h2 class="carousel-title">Interactive Community Discord</h2>
+                        <p class="carousel-desc">Join our Discord community channel to coordinate bases, view developer updates, and check events calendar.</p>
+                    </div>
+                </div>
+                <div class="carousel-indicators">
+                    <div class="indicator active"></div>
+                    <div class="indicator"></div>
+                    <div class="indicator"></div>
+                </div>
+            </div>
+
+            <!-- Welcome Profile Action Box -->
+            <div class="welcome-card">
+                <img src="https://s.namemc.com/3d/skin/body.png?id=9e810c0a5c990275&model=classic&theta=32&phi=19&time=90&width=150&height=200" alt="Minecraft Skin Body render" class="welcome-avatar">
+                <div class="welcome-info">
+                    <h2>Welcome to <span>Zalren</span> Web Portal!</h2>
+                    <p>To access community forums, participate in voter events, and claim store bonuses, join our ranks today.</p>
+                    <div class="welcome-buttons">
+                        <a href="login.html" class="btn btn-primary" id="welcome-login">Login Account</a>
+                        <a href="register.html" class="btn btn-secondary" id="welcome-register">Register</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Server News Section -->
+            <div class="news-section" style="margin-top: 30px;">
+                <h2 style="font-size: 1.8rem; margin: 30px 0 15px; color: #ffffff; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-newspaper" style="color: var(--p-color);"></i> Server News
+                </h2>
+                <div id="home-posts-container">
+                    <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+                        <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 10px; color: var(--p-color);"></i>
+                        <p>Loading news...</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Right Side: Sidebar Widgets & Live Stats -->
+        <aside class="content-right">
+            
+            <!-- Server Status Widget -->
+            <div class="card">
+                <div class="widget-title">Server Status <span class="badge" id="server-badge">Checking...</span></div>
+                <div class="stat-row">
+                    <span class="stat-label">Online Players</span>
+                    <span class="stat-value" id="widget-players-val">Checking...</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">IP Address</span>
+                    <span class="stat-value server-ip-display" style="color: var(--p-color); font-weight: 700;">play.zalrensmp.fun</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Version</span>
+                    <span class="stat-value" id="widget-version-val">Java 1.20.x</span>
+                </div>
+            </div>
+
+            <!-- Discord Official Widget -->
+            <div class="card" style="padding: 0; overflow: hidden; border: 1px solid rgba(88,101,242,0.4);">
+                <iframe 
+                    src="https://discord.com/widget?id=1457402199922573488&theme=dark" 
+                    width="100%" 
+                    height="500" 
+                    allowtransparency="true" 
+                    frameborder="0" 
+                    sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
+                </iframe>
+            </div>
+
+
+        </aside>
+
+    </main>
+
+
+
+    <!-- Footer Area -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-about">
+                <h3>Play Now</h3>
+                <p>Start your pixel block adventure today! Join the community server now to compete in our custom arenas and wilderness worlds.</p>
+                <button class="btn btn-primary" id="play-ip-btn" style="display: inline-flex; align-items: center; gap: 10px;">
+                    <span class="server-ip-display">play.zalrensmp.fun</span> <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="footer-store">
+                <h3>Store Benefits</h3>
+                <p>Visit our server store to purchase ranks, claim cosmetic keys, boost capabilities, and support development.</p>
+                <a href="https://zalrensmp-webshop.tebex.io/" target="_blank" class="btn btn-primary" style="display: inline-block; margin-top: 10px;">Shop Ranks</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>Zalren &copy; 2026. All rights reserved.</div>
+            <div>Not affiliated with Mojang or Microsoft. Created By Hon3y_pie.</div>
+        </div>
+    </footer>
+
+    <!-- Copy IP Toast Notification -->
+    <div class="toast" id="toast">Server IP Copied!</div>
+
+
+
+
+
+    <!-- Script loading -->
+    <script src="app.js"></script>
+</body>
+</html>
