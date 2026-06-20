@@ -23,7 +23,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Connect to MongoDB
 connectDB();
 
-const upload = multer({ dest: 'uploads/' });
+// On Netlify Functions the filesystem is read-only except /tmp
+const UPLOAD_DIR = process.env.NETLIFY ? '/tmp/uploads' : path.join(__dirname, 'uploads');
+if (!fs.existsSync(UPLOAD_DIR)) { try { fs.mkdirSync(UPLOAD_DIR, { recursive: true }); } catch(e) {} }
+const upload = multer({ dest: UPLOAD_DIR });
 
 // Setup Nodemailer SMTP Transporter
 function getTransporter() {
