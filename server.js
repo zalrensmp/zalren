@@ -23,9 +23,15 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Connect to MongoDB
 connectDB();
 
-// On Netlify Functions the filesystem is read-only except /tmp
-const UPLOAD_DIR = process.env.NETLIFY ? '/tmp/uploads' : path.join(__dirname, 'uploads');
-if (!fs.existsSync(UPLOAD_DIR)) { try { fs.mkdirSync(UPLOAD_DIR, { recursive: true }); } catch(e) {} }
+// Detect writable upload dir — /tmp is always writable on Netlify Lambda, local path on dev
+let UPLOAD_DIR = path.join(__dirname, 'uploads');
+try {
+    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+} catch (e) {
+    // Fallback to /tmp on read-only filesystems (Netlify, Lambda)
+    UPLOAD_DIR = '/tmp/uploads';
+    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+}
 const upload = multer({ dest: UPLOAD_DIR });
 
 // Setup Nodemailer SMTP Transporter
