@@ -268,7 +268,14 @@ app.post('/api/logout', requireAuth, async (req, res) => {
 /* ================= PUBLIC CONTENT ENDPOINTS ================= */
 
 app.get('/api/staff', async (req, res) => { res.json(await Staff.find().sort('order')); });
-app.get('/api/forum', async (req, res) => { res.json(await Forum.find().sort({ pinned: -1, created_at: -1 })); });
+app.get('/api/forum', async (req, res) => {
+    let posts = await Forum.find().sort({ pinned: -1, created_at: -1 }).lean();
+    const users = await User.find({}, 'username avatar_url').lean();
+    const avatarMap = {};
+    users.forEach(u => avatarMap[u.username] = u.avatar_url);
+    posts = posts.map(p => ({ ...p, author_avatar: avatarMap[p.author] || null }));
+    res.json(posts);
+});
 app.get('/api/leaderboard', async (req, res) => { res.json(await Leaderboard.find().sort('order')); });
 app.get('/api/rules', async (req, res) => { res.json(await Rules.find().sort('order')); });
 app.get('/api/votes', async (req, res) => { res.json(await Votes.find().sort('order')); });
@@ -277,6 +284,39 @@ app.get('/api/settings', async (req, res) => {
     if (!settings) { settings = new Settings(); await settings.save(); }
     res.json(settings);
 });
+
+/* ================= ADMIN REORDER HELPER ================= */
+async function handleMove(Model, id, direction, res) {
+    try {
+        const items = await Model.find().sort('order');
+        const index = items.findIndex(x => String(x._id) === id);
+        if (index === -1) return res.status(404).json({ error: 'Item not found' });
+        
+        if (direction === 'up' && index > 0) {
+            const temp = items[index];
+            items[index] = items[index - 1];
+            items[index - 1] = temp;
+        } else if (direction === 'down' && index < items.length - 1) {
+            const temp = items[index];
+            items[index] = items[index + 1];
+            items[index + 1] = temp;
+        } else {
+            return res.json({ message: 'No move needed' });
+        }
+        
+        for (let i = 0; i < items.length; i++) {
+            await Model.findByIdAndUpdate(items[i]._id, { order: i });
+        }
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
+app.post('/api/admin/staff/:id/move', requireAdmin, async (req, res) => handleMove(Staff, req.params.id, req.body.direction, res));
+app.post('/api/admin/leaderboard/:id/move', requireAdmin, async (req, res) => handleMove(Leaderboard, req.params.id, req.body.direction, res));
+app.post('/api/admin/rules/:id/move', requireAdmin, async (req, res) => handleMove(Rules, req.params.id, req.body.direction, res));
+app.post('/api/admin/votes/:id/move', requireAdmin, async (req, res) => handleMove(Votes, req.params.id, req.body.direction, res));
 
 /* ================= ADMIN: STAFF ================= */
 
@@ -306,7 +346,12 @@ app.delete('/api/admin/staff/:id', requireAdmin, async (req, res) => {
 
 /* ================= PUBLIC CONTENT ENDPOINTS (ADDITIONAL) ================= */
 app.get('/api/homeposts', async (req, res) => {
-    res.json(await HomePost.find().sort({ pinned: -1, created_at: -1 }));
+    let posts = await HomePost.find().sort({ pinned: -1, created_at: -1 }).lean();
+    const users = await User.find({}, 'username avatar_url').lean();
+    const avatarMap = {};
+    users.forEach(u => avatarMap[u.username] = u.avatar_url);
+    posts = posts.map(p => ({ ...p, author_avatar: avatarMap[p.author] || null }));
+    res.json(posts);
 });
 app.get('/api/slides', async (req, res) => {
     res.json(await Slide.find().sort('order'));

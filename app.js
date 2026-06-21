@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div style="padding: 20px;">
                                 <h3 style="margin-top:0; color:#fff; font-size:1.3rem;">${escApp(p.title)}</h3>
                                 <div style="color:var(--text-muted); font-size:0.8rem; margin-bottom:12px;">
-                                    <i class="fa-solid fa-clock"></i> ${new Date(p.created_at).toLocaleDateString()}
+                                    ${p.author_avatar ? `<img src="${p.author_avatar}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;">` : `<img src="https://minotar.net/avatar/${encodeURIComponent(p.author)}/20.png" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;">`}<span style="vertical-align:middle;margin-right:12px;font-weight:bold;color:var(--text-main);">${escApp(p.author)}</span> <i class="fa-solid fa-clock"></i> ${new Date(p.created_at).toLocaleDateString()}
                                 </div>
                                 <p style="color:#cbd5e1; line-height:1.6; white-space:pre-wrap;">${escApp(p.body)}</p>
                                 ${p.image_url ? `<img src="${p.image_url}" alt="News image" style="max-width:100%; border-radius:6px; margin-top:15px; max-height:350px; object-fit:cover; display:block;">` : ''}

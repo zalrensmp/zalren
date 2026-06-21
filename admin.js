@@ -450,7 +450,7 @@ async function loadForum() {
                         </div>
                         <h3 style="margin-bottom:6px; color:var(--text-main); font-size:1.15rem;">${esc(p.title)}</h3>
                         <div style="color:var(--text-muted); font-size:0.85rem; margin-bottom:10px;">
-                            <i class="fa-solid fa-user"></i> ${esc(p.author)} &nbsp;•&nbsp; <i class="fa-solid fa-clock"></i> ${fmtDate(p.created_at)}
+                            ${p.author_avatar ? `<img src="${p.author_avatar}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;">` : `<img src="https://minotar.net/avatar/${encodeURIComponent(p.author)}/20.png" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;">`}<span style="vertical-align:middle;margin-right:12px;">${esc(p.author)}</span> &nbsp;•&nbsp; <i class="fa-solid fa-clock"></i> ${fmtDate(p.created_at)}
                         </div>
                         <p style="color:var(--text-muted); white-space:pre-wrap; line-height:1.6;">${esc(p.body).substring(0, 300)}${p.body.length > 300 ? '…' : ''}</p>
                     </div>
@@ -909,7 +909,7 @@ async function loadUsers() {
                 <td style="color:var(--text-muted);">${u._id}</td>
                 <td>
                     <div class="user-cell">
-                        <img class="row-avatar" src="${mcHead(u.username)}" alt="" onerror="this.style.visibility='hidden'">
+                        <img class="row-avatar" src="${u.avatar_url || mcHead(u.minecraft_username || u.username)}" alt="" onerror="this.style.visibility='hidden'">
                         <div>
                             <div class="u-name">${esc(u.username)}${isSelf ? ' <span style="color:var(--text-muted); font-size:0.75rem;">(you)</span>' : ''}${isWebDev ? ' <span style="color:#a78bfa; font-size:0.75rem;"><i class="fa-solid fa-code"></i> Web Dev</span>' : ''}</div>
                             <div class="u-sub">${esc(u.email)}</div>
