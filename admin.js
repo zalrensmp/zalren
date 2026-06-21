@@ -327,14 +327,14 @@ function renderStaff() {
             <td>${esc(s.minecraft_username)}</td>
             <td>
                 <div class="action-group">
-                    <button class="icon-btn" data-staff-up="${s.id}" ${i === 0 ? 'disabled' : ''} title="Move up"><i class="fa-solid fa-arrow-up"></i></button>
-                    <button class="icon-btn" data-staff-down="${s.id}" ${i === staffCache.length - 1 ? 'disabled' : ''} title="Move down"><i class="fa-solid fa-arrow-down"></i></button>
+                    <button class="icon-btn" data-staff-up="${s._id}" ${i === 0 ? 'disabled' : ''} title="Move up"><i class="fa-solid fa-arrow-up"></i></button>
+                    <button class="icon-btn" data-staff-down="${s._id}" ${i === staffCache.length - 1 ? 'disabled' : ''} title="Move down"><i class="fa-solid fa-arrow-down"></i></button>
                 </div>
             </td>
             <td>
                 <div class="action-group">
-                    <button class="icon-btn" data-staff-edit="${s.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
-                    <button class="icon-btn danger" data-staff-del="${s.id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                    <button class="icon-btn" data-staff-edit="${s._id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                    <button class="icon-btn danger" data-staff-del="${s._id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </td>
         </tr>`).join('');
@@ -352,7 +352,7 @@ document.addEventListener('click', async (e) => {
     const del = e.target.closest('[data-staff-del]');
     if (up)   { await moveStaff(up.getAttribute('data-staff-up'), 'up'); }
     if (down) { await moveStaff(down.getAttribute('data-staff-down'), 'down'); }
-    if (edit) { openStaffForm(staffCache.find(s => s.id == edit.getAttribute('data-staff-edit'))); }
+    if (edit) { openStaffForm(staffCache.find(s => String(s._id) === edit.getAttribute('data-staff-edit'))); }
     if (del)  { await deleteStaff(del.getAttribute('data-staff-del')); }
 });
 
@@ -403,6 +403,7 @@ function openStaffForm(existing) {
             <div class="admin-field">
                 <label>Skin Image (Optional)</label>
                 <input type="file" class="admin-input" name="skin" accept="image/*">
+                <small style="color:var(--text-muted);font-size:0.78rem;margin-top:4px;display:block;"><i class="fa-solid fa-circle-info"></i> Minecraft skin: 64×64px PNG</small>
             </div>
             <div class="admin-modal-actions">
                 <button type="button" class="btn-secondary-admin" id="sf-cancel">Cancel</button>
@@ -416,7 +417,7 @@ function openStaffForm(existing) {
         const fd = new FormData(ev.target);
         try {
             if (isEdit) {
-                await api(`/api/admin/staff/${existing.id}`, { method: 'PUT', body: fd });
+                await api(`/api/admin/staff/${existing._id}`, { method: 'PUT', body: fd });
                 toast('Staff member updated');
             } else {
                 await api('/api/admin/staff', { method: 'POST', body: fd });
@@ -454,9 +455,9 @@ async function loadForum() {
                         <p style="color:var(--text-muted); white-space:pre-wrap; line-height:1.6;">${esc(p.body).substring(0, 300)}${p.body.length > 300 ? '…' : ''}</p>
                     </div>
                     <div class="action-group" style="flex-shrink:0;">
-                        <button class="icon-btn" data-forum-pin="${p.id}" title="${p.pinned ? 'Unpin' : 'Pin'}"><i class="fa-solid fa-thumbtack"></i></button>
-                        <button class="icon-btn" data-forum-edit="${p.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
-                        <button class="icon-btn danger" data-forum-del="${p.id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                        <button class="icon-btn" data-forum-pin="${p._id}" title="${p.pinned ? 'Unpin' : 'Pin'}"><i class="fa-solid fa-thumbtack"></i></button>
+                        <button class="icon-btn" data-forum-edit="${p._id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                        <button class="icon-btn danger" data-forum-del="${p._id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             </div>`).join('');
@@ -480,7 +481,7 @@ document.addEventListener('click', async (e) => {
     if (edit) {
         try {
             forumCache = await api('/api/forum');
-            const post = forumCache.find(p => p.id == edit.getAttribute('data-forum-edit'));
+            const post = forumCache.find(p => String(p._id) === edit.getAttribute('data-forum-edit'));
             openForumForm(post);
         } catch (err) { toast(err.message, 'error'); }
     }
@@ -525,6 +526,7 @@ function openForumForm(existing) {
             <div class="admin-field">
                 <label>Post Image (Optional)</label>
                 <input type="file" class="admin-input" name="image" accept="image/*">
+                <small style="color:var(--text-muted);font-size:0.78rem;margin-top:4px;display:block;"><i class="fa-solid fa-circle-info"></i> Recommended: 1200×630px, max 5MB (JPG/PNG/WebP)</small>
             </div>
             <div class="admin-modal-actions">
                 <button type="button" class="btn-secondary-admin" id="ff-cancel">Cancel</button>
@@ -538,7 +540,7 @@ function openForumForm(existing) {
         const fd = new FormData(ev.target);
         try {
             if (isEdit) {
-                await api(`/api/admin/forum/${existing.id}`, { method: 'PUT', body: fd });
+                await api(`/api/admin/forum/${existing._id}`, { method: 'PUT', body: fd });
                 toast('Post updated');
             } else {
                 await api('/api/admin/forum', { method: 'POST', body: fd });
@@ -587,10 +589,10 @@ function renderLeaderboard() {
             <td style="font-weight:700; color:var(--p-color);">${esc(e.score.toLocaleString())}</td>
             <td>
                 <div class="action-group">
-                    <button class="icon-btn" data-lb-up="${e.id}" ${i === 0 ? 'disabled' : ''} title="Move up"><i class="fa-solid fa-arrow-up"></i></button>
-                    <button class="icon-btn" data-lb-down="${e.id}" ${i === leaderboardCache.length - 1 ? 'disabled' : ''} title="Move down"><i class="fa-solid fa-arrow-down"></i></button>
-                    <button class="icon-btn" data-lb-edit="${e.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
-                    <button class="icon-btn danger" data-lb-del="${e.id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                    <button class="icon-btn" data-lb-up="${e._id}" ${i === 0 ? 'disabled' : ''} title="Move up"><i class="fa-solid fa-arrow-up"></i></button>
+                    <button class="icon-btn" data-lb-down="${e._id}" ${i === leaderboardCache.length - 1 ? 'disabled' : ''} title="Move down"><i class="fa-solid fa-arrow-down"></i></button>
+                    <button class="icon-btn" data-lb-edit="${e._id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                    <button class="icon-btn danger" data-lb-del="${e._id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </td>
         </tr>`;
@@ -664,7 +666,7 @@ function openLeaderboardForm(existing) {
         payload.score = Number(payload.score);
         try {
             if (isEdit) {
-                await api(`/api/admin/leaderboard/${existing.id}`, { method: 'PUT', body: payload });
+                await api(`/api/admin/leaderboard/${existing._id}`, { method: 'PUT', body: payload });
                 toast('Entry updated');
             } else {
                 await api('/api/admin/leaderboard', { method: 'POST', body: payload });
@@ -702,14 +704,14 @@ function renderRules() {
             <td>${esc(r.rule_text)}</td>
             <td>
                 <div class="action-group">
-                    <button class="icon-btn" data-rule-up="${r.id}" ${i === 0 ? 'disabled' : ''}><i class="fa-solid fa-arrow-up"></i></button>
-                    <button class="icon-btn" data-rule-down="${r.id}" ${i === rulesCache.length - 1 ? 'disabled' : ''}><i class="fa-solid fa-arrow-down"></i></button>
+                    <button class="icon-btn" data-rule-up="${r._id}" ${i === 0 ? 'disabled' : ''}><i class="fa-solid fa-arrow-up"></i></button>
+                    <button class="icon-btn" data-rule-down="${r._id}" ${i === rulesCache.length - 1 ? 'disabled' : ''}><i class="fa-solid fa-arrow-down"></i></button>
                 </div>
             </td>
             <td>
                 <div class="action-group">
-                    <button class="icon-btn" data-rule-edit="${r.id}"><i class="fa-solid fa-pen"></i></button>
-                    <button class="icon-btn danger" data-rule-del="${r.id}"><i class="fa-solid fa-trash"></i></button>
+                    <button class="icon-btn" data-rule-edit="${r._id}"><i class="fa-solid fa-pen"></i></button>
+                    <button class="icon-btn danger" data-rule-del="${r._id}"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </td>
         </tr>`).join('');
@@ -772,7 +774,7 @@ function openRuleForm(existing) {
         const fd = new FormData(ev.target);
         const payload = Object.fromEntries(fd.entries());
         try {
-            if (isEdit) await api(`/api/admin/rules/${existing.id}`, { method: 'PUT', body: payload });
+            if (isEdit) await api(`/api/admin/rules/${existing._id}`, { method: 'PUT', body: payload });
             else await api('/api/admin/rules', { method: 'POST', body: payload });
             closeModal();
             toast('Rule saved');
@@ -806,14 +808,14 @@ function renderVotes() {
             <td><a href="${esc(v.url)}" target="_blank" style="color:var(--p-color);">${esc(v.url)}</a></td>
             <td>
                 <div class="action-group">
-                    <button class="icon-btn" data-vote-up="${v.id}" ${i === 0 ? 'disabled' : ''}><i class="fa-solid fa-arrow-up"></i></button>
-                    <button class="icon-btn" data-vote-down="${v.id}" ${i === votesCache.length - 1 ? 'disabled' : ''}><i class="fa-solid fa-arrow-down"></i></button>
+                    <button class="icon-btn" data-vote-up="${v._id}" ${i === 0 ? 'disabled' : ''}><i class="fa-solid fa-arrow-up"></i></button>
+                    <button class="icon-btn" data-vote-down="${v._id}" ${i === votesCache.length - 1 ? 'disabled' : ''}><i class="fa-solid fa-arrow-down"></i></button>
                 </div>
             </td>
             <td>
                 <div class="action-group">
-                    <button class="icon-btn" data-vote-edit="${v.id}"><i class="fa-solid fa-pen"></i></button>
-                    <button class="icon-btn danger" data-vote-del="${v.id}"><i class="fa-solid fa-trash"></i></button>
+                    <button class="icon-btn" data-vote-edit="${v._id}"><i class="fa-solid fa-pen"></i></button>
+                    <button class="icon-btn danger" data-vote-del="${v._id}"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </td>
         </tr>`).join('');
@@ -868,7 +870,7 @@ function openVoteForm(existing) {
         const fd = new FormData(ev.target);
         const payload = Object.fromEntries(fd.entries());
         try {
-            if (isEdit) await api(`/api/admin/votes/${existing.id}`, { method: 'PUT', body: payload });
+            if (isEdit) await api(`/api/admin/votes/${existing._id}`, { method: 'PUT', body: payload });
             else await api('/api/admin/votes', { method: 'POST', body: payload });
             closeModal();
             toast('Vote link saved');
@@ -1014,8 +1016,8 @@ async function loadHomePosts() {
                         ${p.image_url ? `<img src="${p.image_url}" alt="Post image" style="max-height:150px; display:block; margin-top:10px; border-radius:6px; border:1px solid #333;">` : ''}
                     </div>
                     <div class="action-group" style="flex-shrink:0;">
-                        <button class="icon-btn" data-homepost-edit="${p.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
-                        <button class="icon-btn danger" data-homepost-del="${p.id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                        <button class="icon-btn" data-homepost-edit="${p._id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                        <button class="icon-btn danger" data-homepost-del="${p._id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             </div>`).join('');
@@ -1027,7 +1029,7 @@ async function loadHomePosts() {
 document.addEventListener('click', async (e) => {
     const edit = e.target.closest('[data-homepost-edit]');
     const del = e.target.closest('[data-homepost-del]');
-    if (edit) { openHomePostForm(homePostsCache.find(p => p.id == edit.getAttribute('data-homepost-edit'))); }
+    if (edit) { openHomePostForm(homePostsCache.find(p => String(p._id) === edit.getAttribute('data-homepost-edit'))); }
     if (del) { await deleteHomePost(del.getAttribute('data-homepost-del')); }
 });
 
@@ -1058,6 +1060,7 @@ function openHomePostForm(existing) {
             <div class="admin-field">
                 <label>Post Image (Optional)</label>
                 <input type="file" class="admin-input" name="image" accept="image/*">
+                <small style="color:var(--text-muted);font-size:0.78rem;margin-top:4px;display:block;"><i class="fa-solid fa-circle-info"></i> Recommended: 1200×630px, max 5MB (JPG/PNG/WebP)</small>
             </div>
             <div class="admin-modal-actions">
                 <button type="button" class="btn-secondary-admin" id="hpf-cancel">Cancel</button>
@@ -1071,7 +1074,7 @@ function openHomePostForm(existing) {
         const fd = new FormData(ev.target);
         try {
             if (isEdit) {
-                await api(`/api/admin/homeposts/${existing.id}`, { method: 'PUT', body: fd });
+                await api(`/api/admin/homeposts/${existing._id}`, { method: 'PUT', body: fd });
                 toast('Post updated');
             } else {
                 await api('/api/admin/homeposts', { method: 'POST', body: fd });
@@ -1115,8 +1118,8 @@ function renderSlides() {
             <td>${s.order}</td>
             <td>
                 <div class="action-group">
-                    <button class="icon-btn" data-slide-edit="${s.id}"><i class="fa-solid fa-pen"></i></button>
-                    <button class="icon-btn danger" data-slide-del="${s.id}"><i class="fa-solid fa-trash"></i></button>
+                    <button class="icon-btn" data-slide-edit="${s._id}"><i class="fa-solid fa-pen"></i></button>
+                    <button class="icon-btn danger" data-slide-del="${s._id}"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </td>
         </tr>`).join('');
@@ -1172,7 +1175,7 @@ function openSlideForm(existing) {
         ev.preventDefault();
         const fd = new FormData(ev.target);
         try {
-            if (isEdit) await api(`/api/admin/slides/${existing.id}`, { method: 'PUT', body: fd });
+            if (isEdit) await api(`/api/admin/slides/${existing._id}`, { method: 'PUT', body: fd });
             else await api('/api/admin/slides', { method: 'POST', body: fd });
             closeModal();
             toast('Slide saved');

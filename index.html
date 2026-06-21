@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Core CSS stylesheet -->
+    <script src="https://cdn.jsdelivr.net/npm/skinview3d@3.0.0-alpha.1/bundles/skinview3d.bundle.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -108,7 +109,7 @@
 
             <!-- Welcome Profile Action Box -->
             <div class="welcome-card">
-                <img src="https://crafatar.com/renders/body/853c80ef3c3749fdaa49938b9a438153?overlay&scale=6" alt="Minecraft Skin Body" class="welcome-avatar" id="welcome-skin-img">
+                <canvas id="hero-skin-canvas" class="welcome-avatar" style="width:120px;height:200px;"></canvas>
                 <div class="welcome-info">
                     <h2>Welcome to <span>Zalren</span> Web Portal!</h2>
                     <p>To access community forums, participate in voter events, and claim store bonuses, join our ranks today.</p>
@@ -205,5 +206,46 @@
 
     <!-- Script loading -->
     <script src="app.js"></script>
+    <script>
+        // Initialize hero 3D skin viewer
+        (function() {
+            const canvas = document.getElementById('hero-skin-canvas');
+            if (!canvas || typeof skinview3d === 'undefined') return;
+            try {
+                // Get logged-in user's IGN or fall back to hon3y_pie
+                let ign = 'hon3y_pie';
+                try {
+                    const u = JSON.parse(localStorage.getItem('user') || '{}');
+                    if (u.minecraft_username) ign = u.minecraft_username;
+                    else if (u.username) ign = u.username;
+                } catch(e) {}
+                const skinUrl = `https://crafatar.com/skins/${encodeURIComponent(ign)}`;
+                const viewer = new skinview3d.SkinViewer({
+                    canvas: canvas,
+                    width: 120,
+                    height: 200,
+                    skin: skinUrl
+                });
+                viewer.camera.position.set(0, 10, 45);
+                viewer.autoRotate = true;
+                viewer.autoRotateSpeed = 0.5;
+                if (viewer.controls) {
+                    viewer.controls.enableRotate = true;
+                    viewer.controls.enableZoom = false;
+                }
+                viewer.animation = new skinview3d.WalkingAnimation();
+                viewer.animation.speed = 0.6;
+            } catch(e) {
+                // Fallback: show static image if WebGL fails
+                const canvas = document.getElementById('hero-skin-canvas');
+                if (canvas) {
+                    const img = document.createElement('img');
+                    img.src = 'https://mc-heads.net/body/hon3y_pie/100';
+                    img.className = 'welcome-avatar';
+                    canvas.replaceWith(img);
+                }
+            }
+        })();
+    </script>
 </body>
 </html>
