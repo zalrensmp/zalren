@@ -98,7 +98,7 @@
                     <article class="card" ${p.pinned ? 'style="border-color: rgba(255,234,0,0.3);"' : ''}>
                         <div class="news-header">
                             <div class="news-meta">
-                                <img class="news-author-avatar" src="https://crafatar.com/avatars/${encodeURIComponent(p.author_avatar || p.author)}?size=64&overlay" alt="" style="object-fit:cover;" onerror="this.style.visibility='hidden'">
+                                ${p.author_avatar ? `<img class="news-author-avatar" src="${p.author_avatar}" alt="" style="object-fit:cover;">` : `<img class="news-author-avatar" src="https://minotar.net/avatar/${encodeURIComponent(p.author)}/64.png" alt="" style="object-fit:cover;">`}
                                 <div>
                                     <a href="#" class="news-title" onclick="return false;">${forumEsc(p.title)}</a>
                                     <div class="news-time">
