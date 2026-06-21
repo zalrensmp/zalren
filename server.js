@@ -441,8 +441,21 @@ app.get('/api/admin/stats', requireAdmin, async (req, res) => {
 
 // Admin Users Endpoints (simplified)
 app.get('/api/admin/users', requireAdmin, async (req, res) => {
-    const users = await User.find().select('-password -session_token');
+    const q = req.query.q;
+    const filter = q ? { $or: [
+        { username: { $regex: q, $options: 'i' } },
+        { email: { $regex: q, $options: 'i' } }
+    ]} : {};
+    const users = await User.find(filter).select('-password -session_token');
     res.json(users);
+});
+app.put('/api/admin/users/:id/verify', requireAdmin, async (req, res) => {
+    const target = await User.findById(req.params.id);
+    if (!target) return res.status(404).json({ error: 'User not found' });
+    if (target.role === 'webdev') return res.status(403).json({ error: 'Cannot modify Web Dev account.' });
+    target.is_verified = 1;
+    await target.save();
+    res.json({ success: true });
 });
 app.put('/api/admin/users/:id/role', requireAdmin, async (req, res) => {
     const target = await User.findById(req.params.id);

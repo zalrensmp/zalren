@@ -108,16 +108,16 @@
                     const skinUrl = s.skin_url && !s.skin_url.startsWith('/uploads')
                         ? s.skin_url
                         : `https://crafatar.com/skins/${encodeURIComponent(s.minecraft_username || s.name)}`;
+                    const container = document.getElementById('skin-viewer-' + s._id);
+                    if (!container) return;
                     try {
                         const viewer = new skinview3d.SkinViewer({
-                            canvas: document.createElement("canvas"),
                             width: 150,
-                            height: 250,
-                            skin: skinUrl
+                            height: 250
                         });
-                        document.getElementById('skin-viewer-' + s._id).appendChild(viewer.canvas);
+                        container.appendChild(viewer.canvas);
+                        viewer.loadSkin(skinUrl).catch(() => viewer.loadSkin('https://crafatar.com/skins/Steve'));
                         viewer.camera.position.set(0, 10, 40);
-                        // viewer.controls is the built-in OrbitControls in skinview3d v3+
                         if (viewer.controls) {
                             viewer.controls.enableRotate = true;
                             viewer.controls.enableZoom = false;
@@ -125,7 +125,7 @@
                         }
                         viewer.animation = new skinview3d.WalkingAnimation();
                         viewer.animation.speed = 0.5;
-                    } catch(e) { console.error("Skin render failed for", s.name, e); }
+                    } catch(e) { console.error('Skin render failed for', s.name, e); }
                 });
             } catch (err) {
                 grid.innerHTML = `
