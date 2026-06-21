@@ -212,14 +212,8 @@
             const canvas = document.getElementById('hero-skin-canvas');
             if (!canvas || typeof skinview3d === 'undefined') return;
             try {
-                // Get logged-in user's IGN or fall back to hon3y_pie
-                let ign = 'hon3y_pie';
-                try {
-                    const u = JSON.parse(localStorage.getItem('user') || '{}');
-                    if (u.minecraft_username) ign = u.minecraft_username;
-                    else if (u.username) ign = u.username;
-                } catch(e) {}
-                const skinUrl = `https://minotar.net/skin/${encodeURIComponent(ign)}`;
+                // Permanently use the custom skin provided by the user (now a valid 64x64 texture)
+                const skinUrl = 'default_skin.png';
                 const viewer = new skinview3d.SkinViewer({
                     canvas: canvas,
                     width: 120,
@@ -240,7 +234,7 @@
                 const canvas = document.getElementById('hero-skin-canvas');
                 if (canvas) {
                     const img = document.createElement('img');
-                    img.src = `https://minotar.net/body/${encodeURIComponent(ign)}/100.png`;
+                    img.src = 'default_skin.png';
                     img.className = 'welcome-avatar';
                     canvas.replaceWith(img);
                 }
