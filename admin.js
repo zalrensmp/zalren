@@ -899,12 +899,12 @@ async function loadUsers() {
         }
         const me = getStoredUser();
         tbody.innerHTML = users.map(u => {
-            const isSelf = Number(u.id) === Number(me.id);
+            const isSelf = String(u._id) === String(me._id || me.id);
             const isOwner = u.role === 'owner';
             const isWebDev = u.role === 'webdev';
             return `
             <tr>
-                <td style="color:var(--text-muted);">${u.id}</td>
+                <td style="color:var(--text-muted);">${u._id}</td>
                 <td>
                     <div class="user-cell">
                         <img class="row-avatar" src="${mcHead(u.username)}" alt="" onerror="this.style.visibility='hidden'">
@@ -919,9 +919,9 @@ async function loadUsers() {
                 <td style="color:var(--text-muted);">${fmtDate(u.created_at)}</td>
                 <td>
                     <div class="action-group">
-                        ${!u.is_verified && !isWebDev ? `<button class="icon-btn" data-user-verify="${u.id}" title="Manually verify"><i class="fa-solid fa-check"></i></button>` : ''}
-                        <button class="icon-btn" data-user-role="${u.id}" title="Change role"${(isOwner || isWebDev) ? ' disabled' : ''}><i class="fa-solid fa-shield"></i></button>
-                        <button class="icon-btn danger" data-user-del="${u.id}" title="Delete user"${(isSelf || isOwner || isWebDev) ? ' disabled' : ''}><i class="fa-solid fa-trash"></i></button>
+                        ${!u.is_verified && !isWebDev ? `<button class="icon-btn" data-user-verify="${u._id}" title="Manually verify"><i class="fa-solid fa-check"></i></button>` : ''}
+                        <button class="icon-btn" data-user-role="${u._id}" title="Change role"${(isOwner || isWebDev) ? ' disabled' : ''}><i class="fa-solid fa-shield"></i></button>
+                        <button class="icon-btn danger" data-user-del="${u._id}" title="Delete user"${(isSelf || isOwner || isWebDev) ? ' disabled' : ''}><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </td>
             </tr>`;

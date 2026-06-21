@@ -96,7 +96,7 @@
                 }
                 grid.innerHTML = staff.map(s => `
                     <div class="staff-card">
-                        <div id="skin-viewer-${s.id}" style="width: 150px; height: 250px; margin: 0 auto 15px;"></div>
+                        <div id="skin-viewer-${s._id}" style="width: 150px; height: 250px; margin: 0 auto 15px;"></div>
                         <h3>${staffEsc(s.name)}</h3>
                         <div class="staff-role-title">${staffEsc(s.role_title)}</div>
                         <p class="staff-desc">${staffEsc(s.description || '')}</p>
@@ -105,7 +105,9 @@
                 // Initialize skinview3d
                 staff.forEach(s => {
                     if (typeof skinview3d === 'undefined') return;
-                    const skinUrl = s.skin_url || `https://crafatar.com/skins/${encodeURIComponent(s.minecraft_username || s.name)}`;
+                    const skinUrl = s.skin_url && !s.skin_url.startsWith('/uploads')
+                        ? s.skin_url
+                        : `https://crafatar.com/skins/${encodeURIComponent(s.minecraft_username || s.name)}`;
                     try {
                         const viewer = new skinview3d.SkinViewer({
                             canvas: document.createElement("canvas"),
@@ -113,13 +115,14 @@
                             height: 250,
                             skin: skinUrl
                         });
-                        document.getElementById('skin-viewer-' + s.id).appendChild(viewer.canvas);
+                        document.getElementById('skin-viewer-' + s._id).appendChild(viewer.canvas);
                         viewer.camera.position.set(0, 10, 40);
-                        const control = skinview3d.createOrbitControls(viewer);
-                        control.enableRotate = true;
-                        control.enableZoom = false;
-                        control.enablePan = false;
-                        
+                        // viewer.controls is the built-in OrbitControls in skinview3d v3+
+                        if (viewer.controls) {
+                            viewer.controls.enableRotate = true;
+                            viewer.controls.enableZoom = false;
+                            viewer.controls.enablePan = false;
+                        }
                         viewer.animation = new skinview3d.WalkingAnimation();
                         viewer.animation.speed = 0.5;
                     } catch(e) { console.error("Skin render failed for", s.name, e); }

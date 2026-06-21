@@ -33,6 +33,8 @@ try {
     fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
 const upload = multer({ dest: UPLOAD_DIR });
+// Also serve uploads from UPLOAD_DIR (runtime uploads on Lambda go to /tmp/uploads)
+app.use('/uploads', express.static(UPLOAD_DIR));
 
 // Setup Nodemailer SMTP Transporter
 function getTransporter() {
