@@ -6,6 +6,7 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
 require('dotenv').config();
 
 const { connectDB, User, Staff, Forum, Leaderboard, Rules, Votes, Settings, HomePost, Slide } = require('./db');
@@ -18,23 +19,30 @@ app.use(express.json());
 
 // Serve static frontend files
 app.use(express.static(__dirname));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connect to MongoDB
 connectDB();
 
-// Detect writable upload dir — /tmp is always writable on Netlify Lambda, local path on dev
-let UPLOAD_DIR = path.join(__dirname, 'uploads');
-try {
-    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-} catch (e) {
-    // Fallback to /tmp on read-only filesystems (Netlify, Lambda)
-    UPLOAD_DIR = '/tmp/uploads';
-    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key:    process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Use memory storage — files go to Cloudinary, not local disk
+const upload = multer({ storage: multer.memoryStorage() });
+
+// Helper: upload buffer to Cloudinary and return secure URL
+function uploadToCloudinary(buffer, folder) {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { folder: `zalren/${folder}`, resource_type: 'image' },
+            (err, result) => err ? reject(err) : resolve(result.secure_url)
+        );
+        stream.end(buffer);
+    });
 }
-const upload = multer({ dest: UPLOAD_DIR });
-// Also serve uploads from UPLOAD_DIR (runtime uploads on Lambda go to /tmp/uploads)
-app.use('/uploads', express.static(UPLOAD_DIR));
 
 // Setup Nodemailer SMTP Transporter
 function getTransporter() {
@@ -243,7 +251,7 @@ app.put('/api/profile', requireAuth, upload.single('avatar'), async (req, res) =
     if (username !== undefined) user.username = String(username).trim();
     if (minecraft_username !== undefined) user.minecraft_username = String(minecraft_username).trim();
     
-    if (req.file) user.avatar_url = '/uploads/' + req.file.filename;
+    if (req.file) user.avatar_url = await uploadToCloudinary(req.file.buffer, 'avatars');
 
     await user.save();
     res.json({ success: true, user: { id: user._id, fname: user.fname, lname: user.lname, username: user.username, email: user.email, minecraft_username: user.minecraft_username || '', avatar_url: user.avatar_url || '' }});
@@ -277,7 +285,7 @@ app.post('/api/admin/staff', requireAdmin, upload.single('skin'), async (req, re
     const item = new Staff({
         name: req.body.name, role_title: req.body.role_title, description: req.body.description,
         minecraft_username: req.body.minecraft_username || req.body.name,
-        skin_url: req.file ? '/uploads/' + req.file.filename : null,
+        skin_url: req.file ? await uploadToCloudinary(req.file.buffer, 'skins') : null,
         order: count + 1
     });
     await item.save();
@@ -287,7 +295,7 @@ app.put('/api/admin/staff/:id', requireAdmin, upload.single('skin'), async (req,
     const item = await Staff.findById(req.params.id);
     if (!item) return res.status(404).json({ error: 'Staff member not found' });
     Object.assign(item, req.body);
-    if (req.file) item.skin_url = '/uploads/' + req.file.filename;
+    if (req.file) item.skin_url = await uploadToCloudinary(req.file.buffer, 'skins');
     await item.save();
     res.json(item);
 });
@@ -313,7 +321,7 @@ app.post('/api/admin/forum', requireAdmin, upload.single('image'), async (req, r
         author: u.username, 
         author_avatar: u.username, 
         category: req.body.category || 'Announcement',
-        image_url: req.file ? '/uploads/' + req.file.filename : null
+        image_url: req.file ? await uploadToCloudinary(req.file.buffer, 'forums') : null
     });
     await item.save();
     res.status(201).json(item);
@@ -325,7 +333,7 @@ app.put('/api/admin/forum/:id', requireAdmin, upload.single('image'), async (req
     if (req.body.title) item.title = req.body.title;
     if (req.body.body) item.body = req.body.body;
     if (req.body.category) item.category = req.body.category;
-    if (req.file) item.image_url = '/uploads/' + req.file.filename;
+    if (req.file) item.image_url = await uploadToCloudinary(req.file.buffer, 'forums');
     
     await item.save();
     res.json(item);
@@ -349,7 +357,7 @@ app.post('/api/admin/homeposts', requireAdmin, upload.single('image'), async (re
         title: req.body.title,
         body: req.body.body,
         author: u.username,
-        image_url: req.file ? '/uploads/' + req.file.filename : null,
+        image_url: req.file ? await uploadToCloudinary(req.file.buffer, 'homeposts') : null,
         pinned: req.body.pinned === 'true'
     });
     await item.save();
@@ -362,7 +370,7 @@ app.put('/api/admin/homeposts/:id', requireAdmin, upload.single('image'), async 
     if (req.body.title) item.title = req.body.title;
     if (req.body.body) item.body = req.body.body;
     if (req.body.pinned !== undefined) item.pinned = req.body.pinned === 'true';
-    if (req.file) item.image_url = '/uploads/' + req.file.filename;
+    if (req.file) item.image_url = await uploadToCloudinary(req.file.buffer, 'homeposts');
     
     await item.save();
     res.json(item);
@@ -378,7 +386,7 @@ app.post('/api/admin/slides', requireAdmin, upload.single('image'), async (req, 
     const item = new Slide({
         title: req.body.title,
         description: req.body.description,
-        image_url: req.file ? '/uploads/' + req.file.filename : '',
+        image_url: req.file ? await uploadToCloudinary(req.file.buffer, 'slides') : '',
         order: count + 1
     });
     await item.save();
@@ -391,7 +399,7 @@ app.put('/api/admin/slides/:id', requireAdmin, upload.single('image'), async (re
     if (req.body.title) item.title = req.body.title;
     if (req.body.description) item.description = req.body.description;
     if (req.body.order !== undefined) item.order = parseInt(req.body.order);
-    if (req.file) item.image_url = '/uploads/' + req.file.filename;
+    if (req.file) item.image_url = await uploadToCloudinary(req.file.buffer, 'slides');
     
     await item.save();
     res.json(item);
@@ -408,7 +416,7 @@ app.put('/api/admin/settings', requireAdmin, upload.single('banner'), async (req
     
     if (req.body.server_ip) settings.server_ip = req.body.server_ip;
     if (req.body.server_version) settings.server_version = req.body.server_version;
-    if (req.file) settings.hero_banner_url = '/uploads/' + req.file.filename;
+    if (req.file) settings.hero_banner_url = await uploadToCloudinary(req.file.buffer, 'banners');
     
     await settings.save();
     res.json(settings);

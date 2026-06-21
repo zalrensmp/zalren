@@ -2,6 +2,7 @@
   command = "npm install"
   functions = "netlify/functions"
   publish = "."
+  environment = { CLOUDINARY_CLOUD_NAME = "dxrovdlg8", CLOUDINARY_API_KEY = "334553292342189" }
 
 [[redirects]]
   from = "/api/*"
