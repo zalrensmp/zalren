@@ -107,7 +107,7 @@
                     if (typeof skinview3d === 'undefined') return;
                     const skinUrl = s.skin_url && !s.skin_url.startsWith('/uploads')
                         ? s.skin_url
-                        : `https://crafatar.com/skins/${encodeURIComponent(s.minecraft_username || s.name)}`;
+                        : `https://minotar.net/skin/${encodeURIComponent(s.minecraft_username || s.name)}`;
                     const container = document.getElementById('skin-viewer-' + s._id);
                     if (!container) return;
                     try {
@@ -116,7 +116,7 @@
                             height: 250
                         });
                         container.appendChild(viewer.canvas);
-                        viewer.loadSkin(skinUrl).catch(() => viewer.loadSkin('https://crafatar.com/skins/Steve'));
+                        viewer.loadSkin(skinUrl).catch(() => viewer.loadSkin('https://minotar.net/skin/Steve'));
                         viewer.camera.position.set(0, 10, 40);
                         if (viewer.controls) {
                             viewer.controls.enableRotate = true;

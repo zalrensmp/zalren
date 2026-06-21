@@ -1163,6 +1163,7 @@ function openSlideForm(existing) {
             <div class="admin-field">
                 <label>Slide Background Image *</label>
                 <input type="file" class="admin-input" name="image" accept="image/*" ${isEdit ? '' : 'required'}>
+                <small style="color:var(--text-muted);font-size:0.78rem;margin-top:4px;display:block;"><i class="fa-solid fa-circle-info"></i> Recommended: 1920×1080px (16:9), max 5MB</small>
             </div>
             <div class="admin-modal-actions">
                 <button type="button" class="btn-secondary-admin" id="slf-cancel">Cancel</button>
